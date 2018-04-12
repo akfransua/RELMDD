@@ -1,0 +1,1410 @@
+/**CFile***********************************************************************
+
+ 
+
+/******************************************************************************/
+
+#include "util.h"
+#include "cuddInt.h"
+#include "structures.h"
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <time.h>
+#include "RelMDD.h"
+static double haha[4][4];
+int *ini;
+static int no_vars;
+static double **result_Union;
+
+/*...................................................................................*/
+// declaration for identity relations
+static char **idSource;
+static char **idTarget;
+static double ide[6][6];
+static int id_id_track;
+static int *inifor_id;
+static int id_row;
+static int id_col;
+static int no_vars_special;
+/*...................................................................................*/
+// bottom declation
+static char **BottomSource;
+static char **BottomTarget;
+static double Bottom[4][4];
+static int Bottom_track;
+static int *inifor_Bottom;
+static int num_list;
+static int Bottom_row;
+static int Bottom_col;
+
+/*...................................................................................*/
+static char **topSource;
+static char **topTarget;
+static double toppp[6][6];
+static int Top_track;
+static int *inifor_Top;
+static int num_list;
+static int Top_row;
+static int Top_col;
+/*...................................................................................*/
+//to do the initialization of RelMDD
+
+void RelMDD_int()
+{
+    dd = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);
+    Cudd_AutodynDisable(dd);
+    bck = Cudd_ReadPlusInfinity(dd);
+    Cudd_SetBackground(dd, bck);
+    //RelMDD_intt();
+}
+/*...................................................................................*/
+
+/*....................................................................................*/
+double setSequence(double value);
+static int mrow;
+static int mcol;
+static int tran_col;
+static int tran_row;
+static char **compleSource;
+static char **compleTarget;
+static char **tran_Source;
+static char **tran_Target;
+static int track;
+static int track_trans;
+static int *iniforcompl;
+static int *iniforTrans;
+static double *ComplementMat2;
+static double *TranposeMat;
+DdNode *node_Complement(DdNode * mat);
+/* ...................................................................................................... */
+
+
+
+
+void RelMDDConverse_Operation(int tra_rn, int tra_col, char **srelation,
+			      char **trelation, double *matrimx)
+{
+//RelMDDComplementPtr ret; 
+
+
+    int move;
+    tran_row = tra_rn;
+    tran_col = tra_col;
+    TranposeMat = matrimx;
+
+    track_trans = (tra_rn * tra_col) - 1;
+    //ret = (RelMDDComplementPtr) malloc(sizeof(RelMDDComplementPtr)*100);
+    //ret->source_Objects= (char*)malloc(sizeof(char)*100); 
+    //ret->target_Objects= (char*)malloc(sizeof(char)); 
+    //ret->relation= (double*)malloc(sizeof(double)*gom*toi); 
+    //while (source[move] != NULL)
+// {
+
+    tran_Source = (char **) malloc(sizeof(char) * 999);
+    tran_Target = (char **) malloc(sizeof(char) * 100);
+    for (move = 0; move < tra_rn; move++) {
+//   printf ("%s\n",pchs);
+	// ret[move].source_Objects = srelation[move]; printf ("%s\t%d\n", ret[move].source_Objects,move);
+
+	//ret[move].target_Objects = target[move]; //printf ("%s\t%d\n", ret[move].target_Objects,move);
+	tran_Source[move] = srelation[move];
+	printf("%s\t%d\n", tran_Source[move], move);
+	//compleTarget[move]= target[move];printf ("%s\t%d\n", compleTarget[move],move);
+	// move++;
+    }
+    //  printf("..%d..\n",row);
+    for (move = 0; move < tra_col; move++) {
+//   printf ("%s\n",pchs);
+	//ret[move].source_Objects = source[move];// printf ("%s\t%d\n", ret[move].source_Objects,move);
+	// ret[move].target_Objects = trelation[move]; printf ("%s\t%d\n", ret[move].target_Objects,move);
+	//compleSource[move]= source[move];printf ("%s\t%d\n", compleSource[move],move);
+	tran_Target[move] = trelation[move];
+	printf("%s\t%d\n", tran_Target[move], move);
+	// move++;
+	//
+    }
+
+
+    for (move = 0; move < tra_rn * tra_col; move++) {
+
+	printf("%f\t%d\n", matrimx[move], move);
+
+    }
+    DdNode *Matt = RelMDD_SwapVariables(dd, 4, 4);
+    Cudd_PrintMinterm(dd, Matt);
+    iniforTrans = RelMDD_ListSequence(Matt, tra_rn, tra_col);
+    Cudd_addMonadicApply(dd, Transpose, Matt);
+
+    for (move = 0; move < 16; move++) {
+	printf("\n..%d\t%d..\n", iniforTrans[move], move);
+
+    }
+
+
+}
+
+
+
+
+CUDD_VALUE_TYPE transposeRelation(CUDD_VALUE_TYPE F)
+{
+    int c;
+
+    char *source_Object1[tran_row];
+    char *target_Object2[tran_col];
+    for (c = 0; c < tran_row; c++) {
+
+	source_Object1[c] = tran_Target[c];
+
+    }
+    for (c = 0; c < tran_col; c++) {
+
+	target_Object2[c] = tran_Source[c];
+
+    }
+
+//char *source_Object1[]={"A","B","A","A"};
+//char *target_Object2[]={"A","A","B","B"};
+
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+    CUDD_VALUE_TYPE value;
+    int ste[listob1][listob2];
+//conversePtr  ret;
+
+//ret = (conversePtr)RelXmlGetConverse();
+    complementPtr ret;
+    ret = (complementPtr) main1();
+    // RelMDDComplementPtr mag;
+    //mag = (RelMDDComplementPtr) malloc(sizeof(RelMDDComplement));
+    //mag->relation=  (double*)malloc(sizeof(double)* listob1*listob2);
+
+
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    ste[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+
+
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    //  if(ste[i][k]==trackt[track]){
+	    if (ste[i][k] == iniforTrans[track_trans]) {
+		printf("track%d\n", track_trans);
+		//  printf("\n%d\t%d\n", i,k);
+		rn = i;
+		cn = k;		//
+	    }
+
+	}
+    }
+
+
+    for (j = 0; j < size_struct; j++) {
+
+	if (!(strcmp(source_Object1[cn], *ret[j].source))
+	    && !(strcmp(target_Object2[rn], *ret[j].target))) {
+	    printf("\n%s\t%s\n ", *ret[j].source, *ret[j].target);
+	    for (l = 0; l < ret->len_Content[j]; l++) {
+		int ma = (int) (F - 1);
+		if (l % 2 == 0) {
+		    if (ret[j].content[l] == TranposeMat[ma]) {
+			// pop[ma]=ret[j].content[l+1];
+			//  mag->relation[ma]= ret[j].content[l+1];
+			value = F;
+			//  printf("\n..%f \t%d\t %f\t%f\n",F, ma, pop[ma],    mag->relation[ma]);
+			track_trans--;
+		    }
+		}
+		//}
+
+		//   printf("\n" );
+	    }
+
+	}
+    }				//}
+
+
+
+    return value;
+}
+
+DdNode *Transpose(DdManager * dd, DdNode * f)
+{
+    CUDD_VALUE_TYPE value;
+    DdNode *res;
+//printf("kot...%f...kot\n",cuddV(f) );
+    if (f == bck) {
+	return (bck);
+    }
+
+    else {
+	if (cuddIsConstant(f) || f == 0) {
+	    //printf("kot...%f...kot\n",cuddV(f) );
+	    transposeRelation(cuddV(f));
+	    value = setSequence(value);
+	    res = cuddUniqueConst(dd, value);
+	    return (res);
+	}
+    }
+    return (NULL);
+
+}
+
+
+
+DdNode *node_Complement(DdNode * mat)
+{
+
+    iniforcompl = RelMDD_ListSequence(mat, mrow, mcol);
+    DdNode *tmp1 = Cudd_addMonadicApply(dd, Complement, mat);
+    free(iniforcompl);		// check this if memory link
+    return tmp1;
+}
+
+
+void RelMDDComplement_Operation(int com_Row, int com_Col,
+				char **com_Rowlist, char **com_Collist,
+				double *matrimx)
+{
+    RelMDDComplementPtr ret;
+    int move;
+    mrow = com_Row;
+    mcol = com_Col;
+    ComplementMat2 = matrimx;
+    track = (com_Row * com_Col) - 1;
+    ret = (RelMDDComplementPtr) malloc(sizeof(RelMDDComplementPtr) * 100);
+    ret->source_Objects = (char *) malloc(sizeof(char) * 100);
+    ret->target_Objects = (char *) malloc(sizeof(char));
+    ret->relation = (double *) malloc(sizeof(double) * com_Row * com_Col);
+
+    compleSource = (char **) malloc(sizeof(char) * 999);
+    compleTarget = (char **) malloc(sizeof(char) * 100);
+
+    for (move = 0; move < com_Row; move++) {
+	ret[move].source_Objects = com_Rowlist[move];
+	printf("%s\t%d\n", ret[move].source_Objects, move);
+
+	printf("%f\t%d\n", ComplementMat2[move], move);
+	compleSource[move] = com_Rowlist[move];
+	printf("%s\t%d\n", compleSource[move], move);
+
+    }
+
+    for (move = 0; move < com_Col; move++) {
+
+	ret[move].target_Objects = com_Rowlist[move];
+	printf("%s\t%d\n", ret[move].target_Objects, move);
+
+	compleTarget[move] = com_Collist[move];
+	printf("%s\t%d\n", compleTarget[move], move);
+
+    }
+    //  iniforcompl=RelMDD_ListSequence(mat,  mrow,mcol);
+    //  DdNode *tmp1 = maine(  );
+    //  node_Complement( tmp1);
+    // for(move=0;move<row*col;move++){
+
+    //   ret->relation[move]=matrix[move]; //printf("%f\t%d\n", ret->relation[move],move);
+
+    //}
+
+    DdNode *M2 = RelMDD_RenameRelation(dd, com_Row, com_Col);
+    iniforcompl =
+	RelMDD_ListSequence(RelMDD_RenameRelation(dd, com_Row, com_Col),
+			    com_Row, com_Col);
+    Cudd_addMonadicApply(dd, Complement, M2);
+
+    for (move = 0; move < 16; move++) {
+	printf("\n..%d\t%d..\n", iniforcompl[move], move);
+
+    }
+}
+
+
+
+
+
+
+CUDD_VALUE_TYPE complementRelation(CUDD_VALUE_TYPE F)
+{
+
+    CUDD_VALUE_TYPE value;
+    int c;
+
+    char *source_Object1[mrow];
+    char *target_Object2[mcol];
+    for (c = 0; c < mrow; c++) {
+
+	source_Object1[c] = compleSource[c];
+
+    }
+
+    for (c = 0; c < mcol; c++) {
+
+	target_Object2[c] = compleTarget[c];
+
+    }
+
+
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+    int ste[listob1][listob2];
+
+    complementPtr ret;
+    ret = (complementPtr) main1();
+//fileInforPtr yet ;
+//yet = (fileInforPtr)RelMdd_ReadFile();
+    int o;
+//RelMDDComplementPtr mag;
+///mag = (RelMDDComplementPtr) malloc(sizeof(RelMDDComplement));
+//mag->relation=  (double*)malloc(sizeof(double)* listob1*listob2);
+
+
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    ste[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+
+
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    //  if(ste[i][k]==trackt[track]){
+	    if (ste[i][k] == iniforcompl[track]) {
+		printf("track%d\n", track);
+		//  printf("\n%d\t%d\n", i,k);
+		rn = i;
+		cn = k;		//
+	    }
+
+	}
+    }
+    double pop;
+
+    for (j = 0; j < size_struct; j++) {
+
+	if (!(strcmp(source_Object1[rn], *ret[j].source))
+	    && !(strcmp(target_Object2[cn], *ret[j].target))) {
+	    printf("\n%s\t%s\n ", *ret[j].source, *ret[j].target);
+	    for (l = 0; l < ret->len_Content[j]; l++) {
+		int ma = (int) (F - 1);
+		if (l % 2 == 0) {
+		    if (ret[j].content[l] == ComplementMat2[ma]) {
+			//pop[ma]=ret[j].content[l+1];
+			pop = ret[j].content[l + 1];
+			//  mag->relation[ma]= ret[j].content[l+1];
+			value = F;
+			printf("\n..%f \t%d\t %f\n", F, ma, pop);
+			track--;
+		    }
+		}
+		//}
+
+		//   printf("\n" );
+	    }
+
+	}
+    }				//}
+
+    return value;
+}
+
+DdNode *Complement(DdManager * dd, DdNode * f)
+{
+    CUDD_VALUE_TYPE value;
+    DdNode *res;
+//printf("kot...%f...kot\n",cuddV(f) );
+    if (f == bck) {
+	return (bck);
+    }
+
+    else {
+	if (cuddIsConstant(f) || f == 0) {
+	    //printf("kot...%f...kot\n",cuddV(f) );
+	    complementRelation(cuddV(f));
+	    value = setSequence(value);
+	    res = cuddUniqueConst(dd, value);
+	    return (res);
+	}
+    }
+    return (NULL);
+
+}
+
+double setSequence(double value)
+{
+
+    return value;
+
+}
+
+
+RelMDDIntersectionPtr RelMDDintersectOperation(int no_rows, int no_cols,
+					       char **ssrelation,
+					       char **ttrelation,
+					       double *matrix1,
+					       double *matrix2)
+{
+// dd = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);
+// Cudd_AutodynDisable(dd);
+    //bck=  Cudd_ReadPlusInfinity( dd );
+    //Cudd_SetBackground( dd,bck ); 
+    RelMDDIntersectionPtr ret;
+    ret =
+	(RelMDDIntersectionPtr) malloc(sizeof(RelMDDIntersection) *
+				       no_rows * no_cols);
+    ret->relation = (double *) malloc(sizeof(double) * no_rows * no_cols);
+    ret->source_Objects =
+	(char *) malloc(sizeof(char) * no_rows * no_cols);
+    ret->target_Objects =
+	(char *) malloc(sizeof(char) * no_rows * no_cols);
+    ret->node = (DdNode *) malloc(sizeof(DdNode) * no_rows * no_cols);
+    DdNode *M1;
+    DdNode *M2;
+    DdNode *tmp;
+    int move1;
+    track_Inters = (no_cols * no_rows) - 1;
+    interMat1 = matrix1;
+    interMat2 = matrix2;
+    interrol = no_rows;
+    interrcol = no_cols;
+    interSource = (char **) malloc(sizeof(char) * 999);
+    interTarget = (char **) malloc(sizeof(char) * 100);
+    for (move1 = 0; move1 < no_rows; move1++) {
+	interSource[move1] = ssrelation[move1];	//printf("%s\t%d\n",unionSource[move1],move1); 
+	ret[move1].source_Objects = ssrelation[move1];
+    }
+    for (move1 = 0; move1 < no_rows; move1++) {
+	interTarget[move1] = ttrelation[move1];	//printf("%s\t%d\n",unionTarget[move1],move1);  
+	ret[move1].target_Objects = ttrelation[move1];
+    }
+
+    M1 = RelMDD_RenameRelation(dd, no_rows, no_cols);
+    Cudd_Ref(M1);
+    M2 = RelMDD_RenameRelation(dd, no_rows, no_cols);
+    iniforInters =
+	RelMDD_ListSequence(RelMDD_RenameRelation(dd, no_rows, no_cols),
+			    no_rows, no_cols);
+    tmp = Cudd_addApply(dd, Cudd_addIntersection, M1, M2);
+
+
+    return ret;
+}
+
+
+
+CUDD_VALUE_TYPE interrelation(CUDD_VALUE_TYPE F, CUDD_VALUE_TYPE G)
+{
+    int c;
+    char *source_Object1[interrol];
+    char *target_Object2[interrcol];
+    for (c = 0; c < interrol; c++) {
+	source_Object1[c] = interSource[c];
+    }
+    for (c = 0; c < interrcol; c++) {
+	target_Object2[c] = interTarget[c];
+    }
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+    int state[listob1][listob2];	// malloc here
+    CUDD_VALUE_TYPE value;
+    intersectionPtr ret;
+    ret = (intersectionPtr) main11();
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    int z, y;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+	for (k = 0; k < listob2; k++) {
+	    state[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+	    if (state[i][k] == iniforInters[track_Inters]) {
+		printf("track%d\n", track_Inters);
+		//  printf("\n%d\t%d\n", i,k);
+		rn = i;
+		cn = k;		//
+		//  printf("\ndd%fdd\n",result_Union[i]);
+	    }
+
+	}
+
+    }
+
+
+    for (j = 0; j < size_struct; j++) {
+
+	if (!(strcmp(source_Object1[rn], *ret[j].source))
+	    && !(strcmp(target_Object2[cn], *ret[j].target))) {
+	    printf("\n%s\t%s\n ", *ret[j].source, *ret[j].target);
+	    // printf("\n%f\t%f\t%f\n" ,F,G, value);
+	    for (l = 0; l < ret->len_Content[j]; l++) {
+		int ma = (int) (F - 1);
+		int ka = (int) (G - 1);
+		if (l % 3 == 0) {
+		    if ((ret[j].content[l] == interMat1[ma])
+			&& (ret[j].content[l + 1] == interMat2[ka])) {
+			double valufe = ret[j].content[l + 2];
+			printf("\n%f\t%f\t%f\n", F, G, valufe);
+			value = F;
+			track_Inters--;
+
+		    }
+
+		}
+
+
+	    }
+
+	}
+    }
+    return value;
+}
+
+
+DdNode *Cudd_addIntersection(DdManager * dd, DdNode ** f, DdNode ** g)
+{
+    DdNode *res;
+    DdNode *F, *G;
+    CUDD_VALUE_TYPE value;
+    F = *f;
+    G = *g;
+    //if ((F == DD_ZERO(dd))||(G == DD_ZERO(dd))) return(DD_ZERO(dd));
+    // if (G == DD_ZERO(dd)) return(F);
+    if ((F == bck) || (G == bck)) {
+	return (bck);
+    }
+
+    else {
+	if (cuddIsConstant(F) && cuddIsConstant(G)) {
+	    value = interrelation(cuddV(F), cuddV(G));
+	    res = cuddUniqueConst(dd, value);
+	    return (res);
+	}
+    }
+    if (F > G) {		/* swap f and g */
+	*f = G;
+	*g = F;
+    }
+    return (NULL);
+
+}				/* end of Cudd_addPlus */
+
+
+
+
+
+
+
+
+
+
+RelMDDUnionPtr RelMDDUnionOperation(int no_rows, int no_cols,
+				    char **ssrelation, char **ttrelation,
+				    double *matrix1, double *matrix2)
+{
+
+    RelMDDUnionPtr ret;
+
+    ret =
+	(RelMDDUnionPtr) malloc(sizeof(RelMDDUnionPtr) * no_rows *
+				no_cols);
+    ret->relation = (double *) malloc(sizeof(double) * no_rows * no_cols);
+    ret->source_Objects =
+	(char *) malloc(sizeof(char) * no_rows * no_cols);
+    ret->target_Objects =
+	(char *) malloc(sizeof(char) * no_rows * no_cols);
+    ret->node = (DdNode *) malloc(sizeof(DdNode) * no_rows * no_cols);
+    int move1;
+    track_union = (no_cols * no_rows) - 1;
+    unionMat1 = matrix1;
+    UnionMat2 = matrix2;
+    urol = no_rows;
+    ucol = no_cols;
+    track_union = (no_rows * no_cols) - 1;
+    unionSource = (char **) malloc(sizeof(char) * 999);
+    unionTarget = (char **) malloc(sizeof(char) * 100);
+    for (move1 = 0; move1 < no_rows; move1++) {
+	unionSource[move1] = ssrelation[move1];	//printf("%s\t%d\n",unionSource[move1],move1);
+	ret[move1].source_Objects = ssrelation[move1];	// printf ("%s\t%d\n", ret[move1].source_Objects,move1);
+
+    }
+    for (move1 = 0; move1 < no_rows; move1++) {
+	unionTarget[move1] = ttrelation[move1];	//printf("%s\t%d\n",unionTarget[move1],move1);
+	ret[move1].target_Objects = ttrelation[move1];	// printf ("%s\t%d\n", ret[move].target_Objects,move);
+
+    }
+
+
+    DdNode *M1;
+    DdNode *M2;
+    DdNode *tmp;
+    M1 = RelMDD_RenameRelation(dd, no_rows, no_cols);
+    Cudd_Ref(M1);
+    //Cudd_RecursiveDeref(manager,f);
+    M2 = RelMDD_RenameRelation(dd, no_rows, no_cols);
+    iniforUnion =
+	RelMDD_ListSequence(RelMDD_RenameRelation(dd, no_rows, no_cols),
+			    no_rows, no_cols);
+    tmp = Cudd_addApply(dd, Cudd_addUnion_Meet, M1, M2);
+    ret->node = tmp;
+    //if(ret== NULL){
+//   printf("\n out of memory\n");
+    // return NULL;
+
+    // }
+
+    int i, l;
+    int h = 0;
+    for (i = 0; i < 4 + 1; i++) {
+	for (l = 0; l < 4 + 1; l++) {
+	    ret->relation[h] = haha[i][l];
+	    printf("\n>>>>%f>>>\n", haha[i][l]);
+
+	    printf("\ndd%fdd\n", ret->relation[h]);
+	    h++;
+	}
+    }
+    //free result_Union.............
+    if (ret == NULL) {
+	printf("\n out of memory\n");
+	return NULL;
+
+    }
+    return ret;
+}
+
+
+
+
+CUDD_VALUE_TYPE unrelation(CUDD_VALUE_TYPE F, CUDD_VALUE_TYPE G)
+{
+    int c;
+    char *source_Object1[urol];
+    char *target_Object2[ucol];
+    for (c = 0; c < urol; c++) {
+
+	source_Object1[c] = unionSource[c];
+
+    }
+    for (c = 0; c < ucol; c++) {
+
+	target_Object2[c] = unionTarget[c];
+
+    }
+    double valufe;
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+
+    int kd;
+//result_Union=( double**)malloc(sizeof(double*)*listob1*listob2);
+//for(kd = 0; kd < listob1; kd++){
+    //result_Union[kd] = (double *)malloc(listob2* sizeof(double));}
+    //      result_Union= (double**)calloc(100,sizeof(double*));
+//for( kd = 0; kd < 100; kd++){
+//              result_Union[kd] = (double *)calloc(30, sizeof(double));}
+    int ste[listob1][listob2];
+    CUDD_VALUE_TYPE value;
+    unionsPtr ret;
+    ret = (unionsPtr) main111();
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    static int z, y;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    ste[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+
+
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    //  if(ste[i][k]==trackt[track]){
+	    if (ste[i][k] == iniforUnion[track_union]) {
+		printf("track%d\n", track_union);
+		//  printf("\n%d\t%d\n", i,k);
+		rn = i;
+		cn = k;		//
+		y = i;
+		z = k;
+	    }
+
+	}
+    }
+
+    for (j = 0; j < size_struct; j++) {
+
+	if (!(strcmp(source_Object1[rn], *ret[j].source))
+	    && !(strcmp(target_Object2[cn], *ret[j].target))) {
+	    printf("\n%s\t%s\n ", *ret[j].source, *ret[j].target);
+	    // printf("\n%f\t%f\t%f\n" ,F,G, value);
+	    for (l = 0; l < ret->len_Content[j]; l++) {
+		int ma = (int) (F - 1);
+		int ka = (int) (G - 1);
+		if (l % 3 == 0) {
+		    if ((ret[j].content[l] == unionMat1[ma])
+			&& (ret[j].content[l + 1] == UnionMat2[ka])) {
+			valufe = ret[j].content[l + 2];
+			//  result_Union[y][z] =valufe;
+			haha[y][z] = valufe;	// dynamic allocation here
+
+			// printf("\n%f\t%f\t%f\t%f\n" ,F,G, valufe, result_Union[ma] );
+			// printf("\ndd%f\t%d\t%d\t%d\t\n",result_Union[y][z],ma,y, z);
+			value = F;
+			track_union--;
+
+		    }
+
+		}
+
+
+	    }
+
+
+	}
+    }
+    return value;
+}
+
+
+DdNode *Cudd_addUnion_Meet(DdManager * dd, DdNode ** f, DdNode ** g)
+{
+    DdNode *res;
+    DdNode *F, *G;
+    CUDD_VALUE_TYPE value;
+    F = *f;
+    G = *g;
+    if ((F == bck) || (G == bck)) {
+	return (bck);
+    } else {
+	if (cuddIsConstant(F) && cuddIsConstant(G)) {
+
+	    printf("\n...%f...\n", cuddV(G));
+	    value = unrelation(cuddV(F), cuddV(G));
+
+	    res = cuddUniqueConst(dd, value);
+	    return (res);
+	}
+    }
+    if (F > G) {		/* swap f and g */
+	*f = G;
+	*g = F;
+    }
+    return (NULL);
+
+}				/* end of Cudd_addPlus */
+
+
+
+
+
+
+DdNode *RelMDD_RenameRelation(DdManager * dd, int roww, int collh)
+{
+    DdNode *E;
+    DdNode *mat;
+    DdNode *M1;
+    DdNode *tmp;
+    DdNode **x;
+    DdNode **y;
+    DdNode **xn;
+    DdNode **yn_;
+    DdNode *km;
+    int length;
+    int nx;
+    int ny;
+    int maxnx;
+    int maxny;
+    int m;
+    int n;
+    int N;
+    int ok;
+    int i;
+    int ll;
+    int f, j, ww = 0;
+
+    // dd = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);
+    int rows[roww * collh];	//malloc
+    int cols[roww * collh];	//malloc  
+    double id_relation[roww * collh];
+    int lll = 1;
+    //int *colum = coll_id( roww);
+    //int *rows=  rol_id(coll);  
+    //int uu [] ={0,0,1,1,2,2};// write methods for this
+    //int vv [] ={0,1,0,1,0,1};// write methods for this    
+    for (f = 0; f < roww; f++) {
+	for (j = 0; j < collh; j++) {
+	    //printf("\n%d%d\n",f,j);
+	    rows[ww] = f;
+	    cols[ww] = j;
+	    //printf("\n%d%d\n",rows[ww],cols[ww]);
+	    ww++;
+	}
+
+    }
+    for (ll = 0; ll < roww * collh; ll++) {
+	id_relation[ll] = lll;	//printf(" %f",id_relation[ll]);  
+	lll = lll + 1;
+
+    }
+    x = y = xn = yn_ = NULL;
+    maxnx = maxny = 0;
+    nx = maxnx;
+    ny = maxny;
+    ok = RelMdd_CreateRelation(dd, &E, &x, &y, &xn, &yn_, &nx, &ny, &m, &n, 0, 2, 1, 2, roww, collh, rows, cols, id_relation);	//read matrix 1
+    //  Cudd_PrintDebug(dd,E,nx + ny,40); //Cudd_RecursiveDeref(dd, E);
+    no_vars = nx;
+    // node_Complement( E);
+    return E;
+}
+
+
+
+int *RelMDD_ListSequence(DdNode * E, int roww, int coll)
+{
+    // dd = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);
+    ini = (int *) malloc(sizeof(int) * roww * coll);	// check here for memory leak
+    int *cube;
+    int t = 0, h = 0;
+    CUDD_VALUE_TYPE value;
+    DdGen *gen;
+    int q;
+    //printf("Testing iterator on cubes:\n");
+    Cudd_ForeachCube(dd, E, gen, cube, value) {
+	for (q = 0; q < no_vars; q++) {
+	}
+	//(void) printf(" %g\t",value);
+	// trackt[t] = value;
+	ini[t] = value;
+	t++;
+    }
+    return ini;
+}
+
+
+
+
+
+
+
+
+DdNode *RelMDD_SwapVariables(DdManager * dd, int roww, int collh)
+{
+    DdNode *E;
+    DdNode *mat;
+    DdNode *M1;
+    DdNode *tmp;
+    DdNode **x;
+    DdNode **y;
+    DdNode **xn;
+    DdNode **yn_;
+    DdNode *km;
+    int length;
+    int nx;
+    int ny;
+    int maxnx;
+    int maxny;
+    int m;
+    int n;
+    int N;
+    int ok;
+    int i;
+    int ll;
+    int f, j, ww = 0;
+
+    // dd = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);
+    int rows[roww * collh];	//malloc
+    int cols[roww * collh];	//malloc  
+    double id_relation[roww * collh];
+    int lll = 1;
+    //int *colum = coll_id( roww);
+    //int *rows=  rol_id(coll);  
+    //int uu [] ={0,0,1,1,2,2};// write methods for this
+    //int vv [] ={0,1,0,1,0,1};// write methods for this    
+    for (f = 0; f < roww; f++) {
+	for (j = 0; j < collh; j++) {
+	    //printf("\n%d%d\n",f,j);
+	    rows[ww] = f;
+	    cols[ww] = j;
+	    //printf("\n%d%d\n",rows[ww],cols[ww]);
+	    ww++;
+	}
+
+    }
+    for (ll = 0; ll < roww * collh; ll++) {
+	id_relation[ll] = lll;	//printf(" %f",id_relation[ll]);  
+	lll = lll + 1;
+
+    }
+    x = y = xn = yn_ = NULL;
+    maxnx = maxny = 0;
+    nx = maxnx;
+    ny = maxny;
+    ok = RelMdd_CreateRelation(dd, &E, &x, &y, &xn, &yn_, &nx, &ny, &m, &n, 0, 2, 1, 2, roww, collh, rows, cols, id_relation);	//read matrix 1
+    //  Cudd_PrintDebug(dd,E,nx + ny,40); //Cudd_RecursiveDeref(dd, E);
+    no_vars = nx;
+    DdNode *P = Cudd_addSwapVariables(dd, E, x, y, nx);
+    return P;
+}
+
+
+
+
+void RelMDDIdentiyRelation(int toi, int gom, char **srelation)
+{
+    int move;
+    id_row = toi;
+    id_col = gom;
+    id_id_track = (toi * gom) - 1;
+    idSource = (char **) malloc(sizeof(char) * 999);
+    idTarget = (char **) malloc(sizeof(char) * 100);
+    for (move = 0; move < toi; move++) {
+	idSource[move] = srelation[move];
+	printf("p%s\t%dp\n", idSource[move], move);
+    }
+    for (move = 0; move < gom; move++) {
+	idTarget[move] = srelation[move];
+	printf("p%s\t%dp\n", idTarget[move], move);
+    }
+    int i, j;
+
+    inifor_id = RelMDD_ListSequence(RelMDD_RenameRelation(dd, 4, 4), 4, 4);
+    for (i = 0; i < 16; i++) {
+	printf("%d\t", inifor_id[i]);
+    }
+    for (i = 0; i < 16; i++) {
+	identityRelation(inifor_id[i]);
+    }
+    for (j = 0; j < 4; j++) {
+	for (i = 0; i < 4; i++) {
+	    printf("%f\t", ide[i][j]);
+	}
+	printf("\n");
+    }
+}
+
+CUDD_VALUE_TYPE identityRelation(CUDD_VALUE_TYPE F)
+{
+
+    int c;
+    char *source_Object1[id_row];
+    char *target_Object2[id_col];
+
+    for (c = 0; c < id_row; c++) {
+	source_Object1[c] = idSource[c];
+    }
+    for (c = 0; c < id_col; c++) {
+	target_Object2[c] = idTarget[c];
+    }
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+    CUDD_VALUE_TYPE value;
+    int ste[listob1][listob2];
+    identityPtr ret;
+    ret = (identityPtr) idet();
+    bottomPtr het;
+    het = (bottomPtr) bott();
+    int size_bot = het->len;
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    ste[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+
+
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    //  if(ste[i][k]==id_id_trackt[id_id_track]){
+	    if (ste[i][k] == inifor_id[id_id_track]) {
+		printf("id_id_track%d%d\n", id_id_track,
+		       inifor_id[id_id_track]);
+		printf("\n%d\t%d\n", i, k);
+		rn = i;
+		cn = k;		//
+	    }
+
+	}
+    }
+
+    if (rn == cn) {
+	for (j = 0; j < size_struct; j++) {
+
+	    if (!(strcmp(source_Object1[cn], *ret[j].object))) {
+
+		printf("id \t%s \t %f\n ", *ret[j].object, ret->rel[j]);
+		ide[rn][rn] = ret->rel[j];
+	    }
+
+
+	}
+    }
+
+    else {
+	for (j = 0; j < size_bot; j++) {
+	    if (!(strcmp(source_Object1[rn], *het[j].source))
+		&& !(strcmp(target_Object2[cn], *het[j].target))) {
+		printf(".........%s\t%s\n", *het[j].source,
+		       *het[j].target);
+		// rel_list1[l] = (double)cur->rel[j];
+		perror("gome");
+		printf(".........%f\t\n", het->rel[j]);
+		ide[cn][rn] = het->rel[j];	//check the assignment for cn and rn 
+		// l++;
+
+	    }
+	}
+    }
+    id_id_track--;
+
+
+
+    return value;
+}
+
+
+
+
+void RelMDDBottomRelation(int toi, int gom, char **srelation,
+			  char **trelation)
+{
+
+
+    printf("pmmmmmmmmmm\t%dp\n", toi);
+
+    //Cudd_AutodynDisable(dd);
+    //bck=  Cudd_ReadPlusInfinity( dd );
+    //Cudd_SetBackground( dd,bck ); 
+    int move;
+    Bottom_row = toi;
+    Bottom_col = gom;
+    Bottom_track = (toi * gom) - 1;
+
+
+    BottomSource = (char **) malloc(sizeof(char) * 999);
+    BottomTarget = (char **) malloc(sizeof(char) * 100);
+    for (move = 0; move < toi; move++) {
+
+
+	BottomSource[move] = srelation[move];
+	printf("p%s\t%dp\n", BottomSource[move], move);
+
+    }
+
+    for (move = 0; move < gom; move++) {
+
+	BottomTarget[move] = trelation[move];
+	printf("p%s\t%dp\n", BottomTarget[move], move);
+
+    }
+    int i, j;
+
+    inifor_Bottom =
+	RelMDD_ListSequence(RelMDD_RenameRelation(dd, 4, 4), 4, 4);
+    for (i = 0; i < 16; i++) {
+	printf("%d\t", inifor_Bottom[i]);
+
+
+    }
+    for (i = 0; i < 16; i++) {
+	 BottomRelation(inifor_Bottom[i]);
+    }
+    for (j = 0; j < 4; j++) {
+	for (i = 0; i < 4; i++) {
+	    printf("%f\t", Bottom[i][j]);
+	}
+	printf("\n");
+    }
+}
+
+
+
+
+
+
+
+CUDD_VALUE_TYPE  BottomRelation(CUDD_VALUE_TYPE F)
+{
+
+    int c;
+    char *source_Object1[Bottom_row];
+    char *target_Object2[Bottom_col];
+
+    for (c = 0; c < Bottom_row; c++) {
+
+	source_Object1[c] = BottomSource[c];
+
+    }
+    for (c = 0; c < Bottom_col; c++) {
+
+	target_Object2[c] = BottomTarget[c];
+
+    }
+
+    int listob1 = (sizeof(source_Object1) / sizeof(char)) / 4;
+    int listob2 = (sizeof(target_Object2) / sizeof(char)) / 4;
+
+    CUDD_VALUE_TYPE value;
+    int ste[listob1][listob2];
+    identityPtr ret;
+    ret = (identityPtr) idet();
+    bottomPtr het;
+    het = (bottomPtr) bott();
+
+
+    int size_bot = het->len;
+    int size_struct = ret->len;
+    int kk, l, j;
+    int rn, cn;
+    static int i, k;
+    int yy = 1;
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    ste[i][k] = yy;
+	    yy++;
+	    //printf("%d",ste[i][k]);
+	}
+    }
+
+
+    for (i = 0; i < listob1; i++) {
+
+	for (k = 0; k < listob2; k++) {
+
+	    //  if(ste[i][k]==Bottom_Bottom_trackt[Bottom_Bottom_track]){
+	    if (ste[i][k] == inifor_Bottom[Bottom_track]) {
+		printf("Bottom_Bottom_track%d%d\n", Bottom_track,
+		       inifor_Bottom[Bottom_track]);
+		printf("\n%d\t%d\n", i, k);
+		rn = i;
+		cn = k;		//
+	    }
+
+	}
+    }
+
+  /*  if (rn == cn) {
+	for (j = 0; j < size_struct; j++) {
+
+	    if (!(strcmp(source_Object1[cn], *ret[j].object))) {
+
+		printf("Bottom \t%s \t %f\n ", *ret[j].object,
+		       ret->rel[j]);
+		Bottom[rn][rn] = ret->rel[j];
+	    }
+
+
+	}
+    }
+*/
+   // else {
+	for (j = 0; j < size_bot; j++) {
+	    if (!(strcmp(source_Object1[rn], *het[j].source))
+		&& !(strcmp(target_Object2[cn], *het[j].target))) {
+		printf(".........%s\t%s\n", *het[j].source,
+		       *het[j].target);
+		// rel_list1[l] = (double)cur->rel[j];
+		perror("gome");
+		printf(".........%f\t\n", het->rel[j]);
+		Bottom[cn][rn] = het->rel[j];	//check the assignment for cn and rn 
+		// l++;
+
+	   // }
+	}
+    }
+    Bottom_track--;
+
+
+
+    return value;
+}
+
+
+
+
+void RelMDDTopRelation(int toi, int gom, char **srelation,  char **trelation){
+
+
+  int move; 
+  Top_row=toi;
+  Top_col =gom;
+  Top_track = (toi*gom)-1;        
+   topSource= (char**)malloc(sizeof(char)*999);
+   topTarget= (char**)malloc(sizeof(char)*100);
+   for(move=0;move<toi;move++){
+
+
+ topSource[move]= srelation[move]; printf("p%s\t%dp\n", topSource[move],move);
+    
+}
+ 
+ for(move=0;move<gom;move++){
+
+    topTarget[move]= trelation[move];printf ("p%s\t%dp\n", topTarget[move],move);
+  
+  }
+int i,j;
+
+ inifor_Top=RelMDD_ListSequence(RelMDD_RenameRelation(dd ,4,4  ), 4, 4);
+for(i=0;i<16;i++){
+ printf("%d\t", inifor_Top[i]);
+ 
+
+}
+ 
+    for (i = 0; i < 16; i++) {
+	 topRelation(inifor_Top[i]);
+    }
+    for (j = 0; j < 4; j++) {
+	for (i = 0; i < 4; i++) {
+	    printf("%f\t",toppp[i][j]);
+	}
+	printf("\n");
+    }
+}
+
+
+
+
+
+CUDD_VALUE_TYPE topRelation( CUDD_VALUE_TYPE F){
+
+int c ;
+char *source_Object1[Top_row];
+char *target_Object2[Top_col];
+
+for(c=0;c<Top_row;c++){
+
+source_Object1[c]= topSource [c];
+
+}
+for(c=0;c<Top_col;c++){
+
+target_Object2[c]=topTarget[c];
+
+}
+
+int listob1 = (sizeof(source_Object1)/sizeof(char))/4;
+int listob2 = (sizeof( target_Object2)/sizeof(char))/4;
+
+CUDD_VALUE_TYPE value;
+int ste[listob1][listob2];
+identityPtr ret;
+ret = (identityPtr)idet();
+topPtr het;
+het = (topPtr) topp();
+  
+  
+int size_bot =het->len; 
+int size_struct =ret->len;
+int kk,l,j; 
+int rn, cn;
+static int i, k; int yy =1;
+for(i = 0; i<listob1; i++){
+
+   for(k = 0; k<listob2; k++){
+               
+              ste[i][k]=yy; yy++;
+              //printf("%d",ste[i][k]);
+             }
+               }
+               
+               
+               for(i = 0; i<listob1; i++){
+
+                          for(k = 0; k<listob2; k++){
+                              
+                           //  if(ste[i][k]==Top_Top_trackt[Top_Top_track]){
+                              if(ste[i][k]==inifor_Top[Top_track]){
+                             printf("Top_Top_track%d%d\n",Top_track,inifor_Top[Top_track]);
+                           printf("\n%d\t%d\n", i,k);
+                               rn=i; cn=k;//
+                            }
+                             
+                             }
+                              }
+                               
+                       /*    if(rn==cn) { 
+                             for(j = 0; j<size_struct; j++){
+  
+                                  if( !(strcmp(source_Object1[cn], *ret[j].object  ))){
+ 
+                                       printf("Top \t%s \t %f\n ",*ret[j].object, ret->rel[j]);
+                                       toppp[rn][rn]=ret->rel[j];
+              }
+
+
+           }}
+           */
+//                             else{
+                                    for(j = 0; j<size_bot; j++){
+                                      if( !(strcmp(source_Object1[rn], *het[j].source  )) && !(strcmp(target_Object2[cn], *het[j].target  ))){
+                                                 printf(".........%s\t%s\n", *het[j].source,*het[j].target);
+              // rel_list1[l] = (double)cur->rel[j];
+                                           perror("gome");
+                                            printf(".........%f\t\n", het->rel[j]);
+                                           toppp[cn][rn]=het->rel[j];//check the assignment for cn and rn 
+  // l++;
+
+}  }
+//}
+                                                   Top_track--;
+               
+       
+
+ return value;
+}
+

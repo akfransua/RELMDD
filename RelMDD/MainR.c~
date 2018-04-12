@@ -1,0 +1,40 @@
+
+#include "util.h"
+#include "cuddInt.h"
+#include "structures.h"
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <time.h>
+#include "RelMDD.h"
+char *file1;
+char *file2;
+
+
+int main(int argc, char **argv)
+{
+    RelMDD_int();
+
+    char *source_Object1[] = { "A", "B", "A", "A" };
+    char *target_Object2[] = { "A", "A", "B", "B" };
+    fileInforPtr cur, cat;
+    file1 = argv[1];
+    file2 = argv[2];
+    cur = RelMdd_ReadFile(file1);	// set this to be ...
+    cat = RelMdd_ReadFile(file2);
+    RelMDDTopRelation(4, 4, source_Object1, target_Object2);
+    //RelMDDBottomRelation(4 ,4, source_Object1,target_Object2);
+//RelMDDIdentiyRelation(4 ,4, source_Object1);
+//RelMDDConverse_Operation(4, 4, source_Object1 , target_Object2, cur->rel);
+    //RelMDD_SwapVariables(dd , 4, 4);
+    //RelMDD_RenameRelation(dd , 4, 4 );
+//RelMDDComplement_Operation(4, 4, source_Object1 , target_Object2, cur->rel);
+//RelMDDintersectOperation(4, 4, source_Object1 ,target_Object2,cur->rel,cat->rel);
+//RelMDDUnionOperation(4, 4, source_Object1 ,target_Object2,cur->rel,cat->rel);
+//RelMDDValidateXmlFile("samplexmlfile.xml");
+//RelMDDParseXmlFile("samplexmlfile.xml");
+//RelXmlGetUnion();
+//relXmlDisplayComments();
+//relXmlGetObjects();
+
+}

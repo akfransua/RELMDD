@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<RelationBasis TypeOfRelation ="FiniteRelAlg">
+
+<relation>
+
+<comment>this is a base file for a sample relation algebra between two objects</comment>
+
+<objects>A,B</objects>
+  
+<relations source="A" target="A" number="4"/>
+<relations source="A" target="B" number="2"/>
+<relations source="B" target="B" number="4"/>
+<relations source="B" target="A" number="2"/>
+
+
+
+<identity object="A" relation="1"/>
+<identity object="B" relation="1"/>
+
+<bottom source="A" target="A" relation="0"/>
+<bottom source="A" target="B" relation="0"/>
+<bottom source="B" target="A" relation="0"/>
+<bottom source="B" target="B" relation="0"/>
+
+<top source="A" target="A" relation="3"/>
+<top source="A" target="B" relation="1"/>
+<top source="B" target="A" relation="1"/>
+<top source="B" target="B" relation="3"/>
+
+
+<union source="A" target= "B">
+       0,1,1;
+       1,0,1;
+       0,0,0;
+       1,1,1
+</union>
+
+
+<union source="B" target= "A">
+       0,1,1;
+       1,0,1;
+       0,0,0;
+       1,1,1
+</union>
+
+<union source="A" target= "A">
+       0,0,0;
+       0,1,1;
+       0,2,2;
+       0,3,3;
+
+       1,0,1;
+       1,1,1;
+       1,2,3;
+       1,3,3;
+
+       2,0,0;
+       2,1,3;
+       2,2,2;
+       2,3,3;
+
+       3,0,3;
+       3,1,3;
+       3,2,3;
+       3,3,3
+
+</union>
+
+
+<union source="B" target= "B">
+       0,0,0;
+       0,1,1;
+       0,2,2;
+       0,3,3;
+
+       1,0,1;
+       1,1,1;
+       1,2,3;
+       1,3,3;
+
+       2,0,0; 
+       2,1,3;
+       2,2,2;
+       2,3,3;
+
+       3,0,3;
+       3,1,3;
+       3,2,3;
+       3,3,3
+
+</union>
+
+
+
+<intersection source="A" target= "B">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</intersection>
+
+
+<intersection source="B" target= "A">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</intersection>
+
+
+<intersection source="A" target= "A">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+
+</intersection>
+
+<intersection source="B" target= "B">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+
+</intersection>
+
+
+
+<composition_Union source="A" target="B">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</composition_Union>
+
+
+<composition_Union source="B" target="A">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</composition_Union>
+
+
+<composition_Union source="A"  target="A">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+</composition_Union>
+
+<composition_Union source="B"  target="B">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+
+</composition_Union>
+
+
+<composition_Intersection source="A" target="B">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</composition_Intersection>
+
+<composition_Intersection source="B" target="A">
+       0,1,0;
+       1,0,0;
+       0,0,0;
+       1,1,1
+</composition_Intersection>
+
+
+<composition_Intersection source="A" target="A">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+</composition_Intersection>
+
+<composition_Intersection source="B"  target="B">
+       0,0,0;
+       0,1,0;
+       0,2,0;
+       0,3,0;
+
+       1,0,0;
+       1,1,1;
+       1,2,0;
+       1,3,1;
+
+       2,0,0;
+       2,1,0;
+       2,2,2;
+       2,3,2;
+
+       3,0,0;
+       3,1,1;
+       3,2,2;
+       3,3,3
+
+</composition_Intersection>
+
+<transposition source="A" target="B"  >
+       0,0;
+       1,1
+
+</transposition>
+
+<transposition source="B" target="A"  >
+       0,0;
+       1,1
+
+</transposition>
+
+<transposition source="A" target="A"  >
+       0,0;
+       1,1;
+       2,2;
+       3,3
+
+</transposition>
+
+<transposition source="B" target="B"  >
+       0,0;
+       1,1;
+       2,2;
+       3,3
+
+</transposition>
+
+<complement source="A" target="B"  >
+      0,1;
+      1,0
+</complement >
+
+<complement  source="B" target="A"  >
+      0,1;
+      1,0
+</complement>
+
+
+<complement  source="A" target="A"  >
+      0,1;
+      1,2;
+      2,1;
+      3,0
+</complement>
+
+<complement source="B" target="B"  >
+      0,1;
+      1,2;
+      2,1;
+      3,0
+</complement>
+
+
+</relation> 
+
+</RelationBasis> 

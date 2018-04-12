@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault =
+"qualified">
+
+<!-- definition of simple elements -->
+<xs:element name="comment" type="xs:string"/>
+<xs:element name="objects"/>
+
+
+<!-- definition of attributes -->
+<xs:attribute name="TypeOfRelation" type="xs:string"/>
+<xs:attribute name="source"  type="xs:NCName"/>
+<xs:attribute name="target"  type="xs:NCName"/>
+<xs:attribute name="number"  type ="xs:integer"/>
+<xs:attribute name="object"  type="xs:NCName"/>
+<xs:attribute name="relation"  type="xs:integer"/>
+
+<!-- definition of complex elements -->
+<xs:element name="relations">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  <xs:attribute ref="number"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="identity">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="object"  use="required"/>
+  <xs:attribute ref="relation"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="bottom">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  <xs:attribute ref="relation"  use="required"/>
+  </xs:complexType>
+</xs:element>
+ 
+ <xs:element name="top">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  <xs:attribute ref="relation"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="union">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="intersection">
+  <xs:complexType mixed="true">
+     <xs:attribute ref="source"  use="required"/>
+     <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="complement">
+  <xs:complexType mixed="true">
+     <xs:attribute ref="source"  use="required"/>
+     <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="composition_Union">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="composition_Intersection">
+  <xs:complexType mixed="true">
+  <xs:attribute ref="source"  use="required"/>
+  <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+<xs:element name="transposition">
+  <xs:complexType mixed="true">
+     <xs:attribute ref="source"  use="required"/>
+     <xs:attribute ref="target"  use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="relation">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element ref="comment"/>
+      <xs:element ref="objects"/>
+      <xs:element ref="relations" maxOccurs="unbounded"/>
+       <xs:element ref="identity" maxOccurs="unbounded"/>
+       <xs:element ref="bottom" maxOccurs="unbounded"/>
+        <xs:element ref="top" maxOccurs="unbounded"/>
+      <xs:element ref="union" maxOccurs="unbounded"/>
+      <xs:element ref="intersection" maxOccurs="unbounded"/>
+       <xs:element ref="composition_Union" maxOccurs="unbounded"/>
+        <xs:element ref="composition_Intersection" maxOccurs="unbounded"/>
+      <xs:element ref="transposition" maxOccurs="unbounded"/>
+       <xs:element ref="complement" maxOccurs="unbounded"/>
+    </xs:sequence>
+   
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="RelationBasis" >
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element ref="relation" maxOccurs="unbounded"/>
+      </xs:sequence>
+   <xs:attribute ref="TypeOfRelation" use="required"/>
+     </xs:complexType>
+</xs:element>
+
+
+</xs:schema> 

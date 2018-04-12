@@ -1,0 +1,313 @@
+
+#include "structures.h"
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+int RelMDDValidateXmlFile(const char *xmlPath) {
+     LIBXML_TEST_VERSION
+    int isvalid = validationXml("xmlschema.xsd", xmlPath);
+    if(isvalid==0){  
+     printf("Validation successful so continue to load the file: ");
+     return isvalid;
+     } 
+    else {printf("Validation is not successful please check you xml document against the schema ");
+     return isvalid;
+    }
+}
+
+
+int RelMDDParseXmlFile(const char *xmlFilename){
+xmlDocPtr doc;
+     doc = xmlParseFile(xmlFilename);
+    if (doc == NULL) {
+    return(0);
+    
+    }  
+  if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        xmlFreeDoc(doc);
+	return(0);
+	  }
+    xmlNode *root = NULL ;
+    root = xmlDocGetRootElement(doc);
+    if( !root ||!root->name || xmlStrcmp(root->name,"RelationBasis") ) 
+  {
+        fprintf(stderr,"empty document or Root node is not equal to RelationBasis\n");
+        xmlFreeDoc(doc);
+	return(0);
+        
+  }
+
+// use this if you are using namepaces for your xmlfile
+/*xmlNsPtr ns;
+    
+    ns = xmlSearchNsByHref(doc, root,
+	    (const xmlChar *) "http://www.w3.org/2001/XMLSchema");
+    if (ns == NULL) {
+        fprintf(stderr,
+	        "document of the wrong type, relation Namespace not found\n");
+	xmlFreeDoc(doc);
+	return(NULL);
+    }*/
+     xmlDocument = doc;
+    return (1);
+    
+}
+
+
+unionsPtr RelXmlGetUnion(){
+
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+   unionsPtr ret = NULL;
+   ret = (unionsPtr) malloc(sizeof(unions));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(unions));
+    ret= (unionsPtr) relxmlReadUnion(root,doc);
+    int k,kk;
+
+  /* for(kk=0;kk<ret->len;kk++){
+  printf("\nstarting union here so please be read thank you God\n ");
+
+printf("  %s || \t%s \n\t..%d..", *ret[kk].source, *ret[kk].target,  ret->len_Content[kk]);
+for(k=0;k<ret->len_Content[kk];k++)
+printf("  %f\n", ret[kk].content[k]);}
+ 
+*/
+return ret;
+ }
+ 
+intersectionPtr RelXmlGetIntersection(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+ intersectionPtr ret = NULL;
+   ret = (intersectionPtr) malloc(sizeof(intersection));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(intersection));
+    ret= (intersectionPtr) relxmlReadIntersection(root,doc);
+return ret;
+ }
+
+complementPtr RelXmlGetComplement(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+complementPtr ret = NULL;
+   ret = (complementPtr) malloc(sizeof(complement));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(complement));
+    ret= (complementPtr) relxmlReadComplement(root,doc);
+return ret;
+ }
+
+compoUnionPtr RelXmlGetComposition_Union(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+compoUnionPtr ret = NULL;
+   ret = (compoUnionPtr) malloc(sizeof(compoUnion));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(compoUnion));
+    ret= (compoUnionPtr) relxmlReadCompostion_Union(root,doc);
+return ret;
+ }
+
+compoInterPtr RelXmlGetComposition_Intersection(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+compoInterPtr ret = NULL;
+   ret = (compoInterPtr) malloc(sizeof(compoInter));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(compoInter));
+    ret= (compoInterPtr) relxmlReadCompostion_Inter(root,doc);
+return ret;
+ }
+ 
+conversePtr RelXmlGetConverse(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+conversePtr ret = NULL;
+   ret = (conversePtr) malloc(sizeof(converse));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(converse));
+    ret= (conversePtr) relxmlReadTransposition(root,doc);
+return ret;
+ }
+ 
+topPtr RelXmlGetTop(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+topPtr ret = NULL;
+   ret = (topPtr) malloc(sizeof(top));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(top));
+    ret= (topPtr) relxmlReadTop(root,doc);
+return ret;
+ }
+ 
+bottomPtr RelXmlGetBottom(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+bottomPtr ret = NULL;
+   ret = (bottomPtr ) malloc(sizeof(bottom));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(top));
+    ret= (bottomPtr) relxmlReadBottom(root,doc);
+return ret;
+ }
+ 
+identityPtr RelXmlGetIdentity(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+identityPtr ret = NULL;
+   ret = (identityPtr ) malloc(sizeof(identity));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(identity));
+    ret= (identityPtr)relxmlReadIdentity(root,doc);
+return ret;
+ }
+ 
+relationPtr RelXmlGetRelation(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+relationPtr ret = NULL;
+   ret = (relationPtr ) malloc(sizeof(relation));
+    if (ret == NULL) {
+        fprintf(stderr,"out of memory\n");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(relation));
+    ret= (relationPtr)relxmlReadrelations(root,doc);
+return ret;
+ }
+ 
+ //print/displays to the comments from the comments tag.
+void relXmlDisplayComments(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+root= root->xmlChildrenNode;
+          while (root!= NULL) {
+           if ((!xmlStrcmp(root->name, (const xmlChar *)"relation"))){
+                           relXmlGetComments( doc, root);
+          
+              }
+              
+          root = root->next;
+}
+
+      }
+      
+      
+char ** relXmlGetObjects(){
+xmlDocPtr doc;  
+xmlNode *root = NULL ;
+doc =  xmlDocument ;
+   if (doc == NULL) {
+        printf("error: could not parse file file.xml\n");
+        }
+   root = xmlDocGetRootElement(doc);
+root= root->xmlChildrenNode;
+xmlChar *string;
+ char **tokens = NULL;
+          while (root!= NULL) {
+           if ((!xmlStrcmp(root->name, (const xmlChar *)"relation"))){
+                string = (xmlChar *)relXmlGetListObject(doc, root);
+                
+               printf("list of objects from the object in basis file %s\n",string);
+               tokens= (char **)split(string);
+              }
+              
+          root = root->next;
+}
+
+  
+return tokens;
+  
+      }
+      
